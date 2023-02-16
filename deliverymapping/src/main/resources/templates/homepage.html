@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<title>Home Page</title>
+</head>
+<link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+
+<body>
+   <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">Home Page</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+        <li class="nav-item"><a th:href="@{/import/excel}" class="nav-link">Submit new file</a></li>
+        <li class="nav-item"><a th:href="@{/viewresult}" class="nav-link">View existing result</a></li>
+        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+        <li class="nav-item"><a th:href="@{/logout}" class="nav-link">Logout</a></li>
+      </ul>
+    </header>
+  </div>
+ 
+   <div class="px-4 py-5 my-5 text-center"> 
+        <a class="btn btn-primary" th:href="@{/import/excel}" role="button">Submit new file</a>
+        <br /><br />
+        <a class="btn btn-secondary" th:href="@{/viewresult}" role="button">View existing result</a>   
+        <br /><br />
+        <a class="btn btn-link" th:href="@{/sample/DemoExcel.xlsx}" role="button">Download Sample File</a>        
+   </div>
+</body>
+
+</html>

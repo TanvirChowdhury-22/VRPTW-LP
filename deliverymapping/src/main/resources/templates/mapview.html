@@ -1,0 +1,201 @@
+<html xmlns:th="http://www.thymeleaf.org">
+  <meta charset="utf-8">
+  <head>
+    <title>Marker</title>
+    <link th:href="@{/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <style>
+      #pageone, #pageone .ui-content, #basicMap {
+        width: 10%;
+        height: 10%;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+  <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">Home Page</span>
+      </a>
+
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Home</a></li>
+        <li class="nav-item"><a th:href="@{/import/excel}" class="nav-link">Submit new file</a></li>
+        <li class="nav-item"><a th:href="@{/viewresult}" class="nav-link">View existing result</a></li>
+        <li class="nav-item"><a href="#" class="nav-link">About</a></li>
+        <li class="nav-item"><a th:href="@{/logout}" class="nav-link">Logout</a></li>
+      </ul>
+    </header>
+  </div>
+    <div id="mapdiv"></div>
+
+    <script type="text/javascript" th:src="@{/jquery-3.5.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/openlayers/OpenLayers.js}"></script>
+    
+
+    <script>
+      $(document).ready(function(){
+        // Adapted from: harrywood.co.uk
+        epsg4326 = new OpenLayers.Projection("EPSG:4326");
+
+        map = new OpenLayers.Map({
+          div: "mapdiv",
+          displayProjection: epsg4326   // With this setting, lat and lon are displayed correctly in MousePosition and permanent anchor
+        });
+
+        // map = new OpenLayers.Map("mapdiv");
+        map.addLayer(new OpenLayers.Layer.OSM());
+        map.addLayer(new OpenLayers.Layer.OSM("Wikimedia",
+          ["https://maps.wikimedia.org/osm-intl/${z}/${x}/${y}.png"],
+          {
+            attribution: "&copy; <a href='http://www.openstreetmap.org/'>OpenStreetMap</a> and contributors, under an <a href='http://www.openstreetmap.org/copyright' title='ODbL'>open license</a>. <a href='https://www.mediawiki.org/wiki/Maps'>Wikimedia's new style (beta)</a>",
+            "tileOptions": { "crossOriginKeyword": null }
+          })
+        );
+        // See https://wiki.openstreetmap.org/wiki/Tile_servers for other OSM-based layers
+
+        map.addControls([
+          new OpenLayers.Control.MousePosition(),
+          new OpenLayers.Control.ScaleLine(),
+          new OpenLayers.Control.LayerSwitcher(),
+          new OpenLayers.Control.Permalink({ anchor: true })
+        ]);
+
+
+        projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
+        var lonLat = new OpenLayers.LonLat(0, 51).transform(epsg4326, projectTo);
+        var zoom = 0;
+        if (!map.getCenter()) {
+          map.setCenter(lonLat, zoom);
+        }
+
+        // marker point-definitions here
+        var page_url = new URL(document.location.href);
+        var project_name = page_url.searchParams.get("q");
+        var jsonLocation = "/mapdata/" + project_name;
+        var markers = $.ajax({
+          url      : jsonLocation,
+          dataType : 'json',
+          async    : false,
+          done  : function(response) {
+            console.log(response);
+          }
+        }).responseJSON;
+
+        var layerName = [];
+        var j = 0;
+        for (var i = 0; i < markers.length; i++) {
+          if (!layerName.includes(markers[i].description)) {
+            j++;
+            layerName.push(markers[i].description); // If new layer name found it is created
+          }
+        }
+
+        var vectorLayer = new OpenLayers.Layer.Vector("Points", {
+          eventListeners:{
+            'featureselected':function(evt){
+              var feature = evt.feature;
+              var popup = new OpenLayers.Popup.FramedCloud("popup",
+                  OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+                  null,
+                  feature.attributes.location+"<br>"+feature.attributes.description,
+                  null, true, null
+                );
+              popup.autoSize = true;
+              popup.maxSize = new OpenLayers.Size(400,800);
+              popup.fixedRelativePosition = true;
+              feature.popup = popup;
+              map.addPopup(popup);
+            },
+            'featureunselected':function(evt){
+              var feature = evt.feature;
+              map.removePopup(feature.popup);
+              feature.popup.destroy();
+              feature.popup = null;
+            }
+          }
+        }); // First element defines first Layer
+
+
+
+        //Loop through the markers array
+        var features = [];
+        var newBound = new OpenLayers.Bounds();
+
+        for (var i = 0; i < markers.length; i++) {
+          var lon = markers[i].longitude;
+          var lat = markers[i].latitude;
+
+          features[i] = new OpenLayers.Feature.Vector(
+            new OpenLayers.Geometry.Point(lon, lat).transform(epsg4326, projectTo),
+            {
+              location: "("+lat+","+lon+")",
+              description: layerName[i]
+            },
+            // see http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html#OpenLayers.Feature.Vector.Constants for more options
+
+            {
+              externalGraphic:"pin.png",
+              graphicWidth: 30,
+              graphicHeight: 40,
+              graphicOpacity: 0.8
+            }
+          );
+
+          newBound.extend(new OpenLayers.Geometry.Point(lon,lat).transform(epsg4326, projectTo));
+        }
+        vectorLayer.addFeatures(features);
+        map.zoomToExtent(newBound);
+
+        for (var i = 0; i < layerName.length; i++) {
+          map.addLayer(vectorLayer);
+        }
+
+        var selector = new OpenLayers.Control.SelectFeature(vectorLayer,{
+          click:true,
+          autoActivate:true
+        });
+
+        map.addControl(selector);
+      });
+    </script>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Thana-District</th>
+        <th>Weight</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="delivery_info: ${delivery_info_list}">
+        <td>
+          <div th:text="${delivery_info.name}"></div>
+        </td>
+        <td>
+          <div th:text="${delivery_info.weight}"></div>
+        </td>
+
+      </tr>
+    </tbody>
+  </table>
+  
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Vehicles</th>
+        <th>Routes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="problem: ${problem_list}">       
+          <td> <div th:text="${problem.getVehicleName}"></div></td>
+   
+          <td><div th:text="${problem.getRoute}"></div></td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
