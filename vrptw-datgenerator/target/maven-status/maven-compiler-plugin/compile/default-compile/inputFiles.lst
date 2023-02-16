@@ -1,0 +1,7 @@
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/WriteVehicleSetAndCapacitySet.java
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/WriteTimeAndDemandParams.java
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/WriteDeliveryNodes.java
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/WriteDistanceMatrix.java
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/CustomerApplication.java
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/UsrBasedVRPTW.java
+/home/rippercus/Development/git/test/examples/vrptw-datgenerator/src/main/java/com/lpsolver/datgenerator/LocBasedVRPTW.java

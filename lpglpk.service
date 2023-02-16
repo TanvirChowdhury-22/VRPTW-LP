@@ -1,0 +1,10 @@
+[Unit]
+Description=DynamicMap daemon server
+After=syslog.target network.target postgresql.service
+
+[Service]
+Type=simple
+ExecStart=/home/rippercus/Downloads/python_command_executer.py
+
+[Install]
+WantedBy=multi-user.target
