@@ -1,7 +1,9 @@
 # VRPTW-LP
 # Project on Delivery Mapping based on VRPTW
 
+
 This repository focuses on solving the Vehicle Routing Problem with Time Windows (VRPTW) using Linear Programming (LP). The VRPTW is an extension of the classic Vehicle Routing Problem (VRP), incorporating specific time frames during which deliveries or pickups must occur.
+
 
 Repository Structure
 	•	deliverymapping/: Directory containing scripts and tools related to mapping deliveries based on VRPTW solutions.
