@@ -6,6 +6,7 @@ This repository focuses on solving the Vehicle Routing Problem with Time Windows
 
 
 Repository Structure
+
 	•	deliverymapping/: Directory containing scripts and tools related to mapping deliveries based on VRPTW solutions.
 	•	vrptw-datgenerator/: Folder housing utilities for generating data files compatible with VRPTW models.
 	•	lpglpk.service: Service file, possibly for automating tasks related to GLPK (GNU Linear Programming Kit) in solving LP formulations of VRPTW.
@@ -15,9 +16,10 @@ Repository Structure
 	•	read_parse_text_file.py: Python script for reading and parsing text files, possibly related to input data or solver outputs.
 	•	vrptw.mod: Model file defining the mathematical formulation of the VRPTW, intended for use with linear programming solvers like GLPK.
 
-Getting Started
+
 
 To utilize the resources in this repository:
+
 	1.	Prerequisites:
 	•	Install GLPK for solving linear programming models.
 	•	Ensure Python is installed for executing auxiliary scripts.
